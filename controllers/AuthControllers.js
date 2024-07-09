@@ -2,9 +2,33 @@ const AuthModel = require("../models/AuthModel");
 const bcrypt = require('bcrypt');
 
 class AuthControllers {
+
+
     static login = async (req, res) => {
-        console.log(req.body)
-        res.send("register wokring")
+        const {email,password}=req.body;
+
+        const checkUser= await AuthModel.findOne({email:email});
+        if(checkUser){
+            const checkPass=await bcrypt.compare(password,checkUser.password)
+            if(checkPass){
+                res.json({
+                    status:200,
+                    msg:"Authentic User",
+                    id:checkUser._id,
+                    email:checkUser.email
+                })
+            }else{
+                res.json({
+                    status:400,
+                    msg:"Incorrect Password"
+                })
+            }
+        }else{
+            res.json({
+                status:400,
+                msg:"User dosn't exists"
+            })
+        }
     }
 
     //for register of new user
@@ -13,8 +37,8 @@ class AuthControllers {
         const { name, email, number, password } = req.body
 
         //checking for if user exists
-        const isExist = await AuthModel.findOne({ email: email });
-
+        const isExist = await AuthModel.findOne({ email: email }).select("-password")
+     
         if (!isExist) {
             //creating hash pass
             let salt = await bcrypt.genSalt(10);
@@ -27,13 +51,12 @@ class AuthControllers {
                 password: hashPass
             })
             const isCreated = await newUser.save();
+
             //user created
             if (isCreated) {
                 res.send({
                     status: 201,
                     msg: "User created",
-                    id: isCreated._id,
-                    name: name
                 })
             } else {
                 console.log(isCreated)
@@ -48,7 +71,7 @@ class AuthControllers {
     }
     static getUser = async (req, res) => {
         const { id } = req.params
-        console.log(id)
+        
     }
 }
 
