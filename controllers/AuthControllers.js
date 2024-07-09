@@ -14,6 +14,7 @@ class AuthControllers {
 
         //checking for if user exists
         const isExist = await AuthModel.findOne({ email: email });
+
         if (!isExist) {
             //creating hash pass
             let salt = await bcrypt.genSalt(10);
@@ -25,22 +26,23 @@ class AuthControllers {
                 number: number,
                 password: hashPass
             })
-
             const isCreated = await newUser.save();
+            //user created
             if (isCreated) {
                 res.send({
-                    status:201,
-                    msg:"User created",
-                    id:isCreated._id,
-                    name:name
+                    status: 201,
+                    msg: "User created",
+                    id: isCreated._id,
+                    name: name
                 })
             } else {
                 console.log(isCreated)
             }
         } else {
+
             res.send({
-                status:400,
-                msg:"User already exists "
+                status: 400,
+                msg: "User already exists "
             })
         }
     }
