@@ -13,6 +13,10 @@ const AuthSchema=new mongoose.Schema({
     number:{
         type:Number
     },
+    profileImg:{
+        type:String,
+        default:null
+    },
     todos:[
         {type: mongoose.Schema.Types.ObjectId,ref:"TodoModel"}
     ],
