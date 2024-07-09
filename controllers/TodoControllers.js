@@ -1,8 +1,8 @@
 const TodoModel=require("../models/TodosModel")
-
+const AuthModel=require("../models/AuthModel")
 class TodoControllers{
     static createTodo=async(req,res)=>{
-        const {title,desc}=req.body
+        const {title,desc,userId}=req.body
 
         const newTodo=new TodoModel({
             title:title,
@@ -11,10 +11,22 @@ class TodoControllers{
 
         const isCreated=await newTodo.save()
         if(isCreated){
-            res.json({
-                status:201,
-                msg:"todo created"
+            const todoId=isCreated._id;
+            const pushId=await AuthModel.findByIdAndUpdate({_id:userId},{
+                $push:{todos:todoId}
             })
+            if(pushId){
+                res.json({
+                    status:201,
+                    msg:"todo created"
+                })
+            }else{
+                res.json({
+                    status:400,
+                    msg:"todo not created"
+                })
+            }
+            
         }else{
             res.json({
                 status:400,
@@ -23,14 +35,32 @@ class TodoControllers{
         }
 
     }
+
+
     static deleteTodo=async(req,res)=>{
-        const {id}=req.params;
-        const isDeleted=await TodoModel.findByIdAndDelete({_id:id})
+        const {todoId}=req.params;
+        const {userId}=req.body;
+
+        const isDeleted=await TodoModel.findByIdAndDelete({_id:todoId})
+        // console.log(userId)
+
         if(isDeleted){
-            res.json({
-                status:201,
-                msg:"todo deleted"
+            const isPoped=await AuthModel.findByIdAndUpdate({_id:userId},{
+                $pull:{todos:todoId}
             })
+
+            if(isPoped){
+                res.json({
+                    status:201,
+                    msg:"todo deleted"
+                })
+            }else{
+                res.json({
+                    status:400,
+                    msg:"todo not deleted"
+                })
+            }
+            
         }else{
             res.json({
                 status:400,
@@ -42,8 +72,10 @@ class TodoControllers{
 
     static editTodo =async(req,res)=>{
         const {title,desc}=req.body
+        const{todoId}=req.params;
+        console.log(todoId);
 
-        const isEdited=await TodoModel.findByIdAndUpdate({_id:id},{
+        const isEdited=await TodoModel.findByIdAndUpdate({_id:todoId},{
             $set:{
                 title:title,
                 desc:desc
@@ -53,12 +85,12 @@ class TodoControllers{
         if(isEdited){
             res.json({
                 status:201,
-                msg:"todo deleted"
+                msg:"todo updated"
             })
         }else{
             res.json({
                 status:400,
-                msg:"todo not deleted"
+                msg:"todo not updated"
             })
         }
         
