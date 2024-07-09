@@ -6,7 +6,8 @@ class TodoControllers{
 
         const newTodo=new TodoModel({
             title:title,
-            desc:desc
+            desc:desc,
+            owner:userId
         })
 
         const isCreated=await newTodo.save()
@@ -73,7 +74,6 @@ class TodoControllers{
     static editTodo =async(req,res)=>{
         const {title,desc}=req.body
         const{todoId}=req.params;
-        console.log(todoId);
 
         const isEdited=await TodoModel.findByIdAndUpdate({_id:todoId},{
             $set:{
@@ -94,6 +94,36 @@ class TodoControllers{
             })
         }
         
+    }
+
+
+    static getTodo=async(req,res)=>{
+        const {todoId}=req.params;
+        const dbRes=await TodoModel.findById({_id:todoId});
+        if(dbRes){
+            res.json({
+                status:200,
+                msg:"todo found",
+                data:dbRes
+            })
+        }else{
+            res.json({
+                status:400,
+                msg:"todo not found"
+            })
+        }
+    }
+
+    static deleteAllTodo=async(req,res)=>{
+        const {userId}=req.params;
+        const isDeleted=await TodoModel.deleteMany({owner:userId})
+        const popTodos=await AuthModel.findByIdAndUpdate({_id:userId},{
+            $set:{todos:[]}
+        })
+
+        const allDone=await Promise.all([isDeleted,popTodos])
+    
+        console.log(allDone)
     }
 }
 module.exports=TodoControllers
