@@ -46,14 +46,55 @@ class NoteControllers {
 
     //deleting a single note
     static deleteNote = async (req, res) => {
-        const {noteId}=req.params;
-        const {userId}=req.body;
+        const { noteId } = req.params;
+        const { userId } = req.body;
 
-        // const isDeleted=await NoteModel.findByIdAndDelete({_id:noteId})
+        const isDeleted = await NoteModel.findByIdAndDelete({ _id: noteId })
+        if (isDeleted) {
+            let isPull = await AuthModel.findByIdAndUpdate({ _id: userId }, {
+                $pull: { notes: noteId }
+            })
+
+            if (isPull) {
+                res.json({
+                    msg: "note pulled",
+                    status: 200
+                })
+            } else {
+                res.json({
+                    msg: "note not pulled",
+                    status: 400
+                })
+            }
+        }else{
+            res.json({
+                msg: "note notdeleted",
+                status: 400
+            })
+        }
 
     }
 
+
     static editNote = async (req, res) => {
+        const {newtitle, newDesc}=req.body;
+        const {noteId}=req.params;
+
+        const isEdited=await NoteModel.findByIdAndUpdate({_id:noteId},{
+            $set:{title:newtitle,desc:newDesc}
+        })
+
+        if(isEdited){
+            res.json({
+                msg:"note edited ",
+                status:200
+            })
+        }else{
+            res.json({
+                msg:"note not updated",
+                status:400
+            })
+        }
 
     }
 
