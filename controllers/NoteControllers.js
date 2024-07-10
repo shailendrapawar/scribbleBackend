@@ -100,12 +100,55 @@ class NoteControllers {
 
 
     static getSingleNote = async (req, res) => {
+        const {noteId}=req.params;
+
+        const note=await NoteModel.findById({_id:noteId});
+        console.log(note)
+        if(note){
+            res.json({
+                status:200,
+                data:note,
+                msg:"note found"
+            })
+        }else{
+            res.json({
+                status:200,
+                data:null,
+                msg:"not not found"
+                
+            })
+        }
 
     }
 
 
     static deleteAllNotes = async (req, res) => {
+        const {userId}=req.body;
 
+        const areDeleted=await NoteModel.deleteMany({owner:userId});
+        if(areDeleted){
+            const arePulled=await AuthModel.findByIdAndUpdate({_id:userId},{
+                $set:{
+                    notes:[]
+                }
+            })
+            if(arePulled){
+                res.json({
+                    msg:"all notes deleted",
+                    status:200
+                })
+            }else{
+                res.json({
+                    msg:"error in pulling",
+                    status:400
+                })
+            }
+        }else{
+            res.json({
+                msg:"notes not deleted",
+                status:400
+            })
+        }
     }
 }
 
