@@ -1,6 +1,8 @@
 const TodoModel=require("../models/TodosModel")
 const AuthModel=require("../models/AuthModel")
 class TodoControllers{
+
+    //create a todo
     static createTodo=async(req,res)=>{
         const {title,desc,userId}=req.body
 
@@ -37,7 +39,7 @@ class TodoControllers{
 
     }
 
-
+    // delete a todo
     static deleteTodo=async(req,res)=>{
         const {todoId}=req.params;
         const {userId}=req.body;
@@ -71,6 +73,7 @@ class TodoControllers{
         
     }
 
+    //editing a todo
     static editTodo =async(req,res)=>{
         const {title,desc}=req.body
         const{todoId}=req.params;
@@ -97,6 +100,7 @@ class TodoControllers{
     }
 
 
+    // to get a single todo
     static getTodo=async(req,res)=>{
         const {todoId}=req.params;
         const dbRes=await TodoModel.findById({_id:todoId});
@@ -114,6 +118,9 @@ class TodoControllers{
         }
     }
 
+
+
+    //delete all todo
     static deleteAllTodo=async(req,res)=>{
         const {userId}=req.params;
         const isDeleted=await TodoModel.deleteMany({owner:userId})
@@ -122,8 +129,18 @@ class TodoControllers{
         })
 
         const allDone=await Promise.all([isDeleted,popTodos])
-    
         console.log(allDone)
+        if(allDone){
+            res.json({
+                msg:"all todos deleted",
+                status:200
+            })
+        }else{
+            res.json({
+                msg:"todos not deleted",
+                status:400
+            })
+        }
     }
 }
 module.exports=TodoControllers

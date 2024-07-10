@@ -6,6 +6,9 @@ const NoteSchema=new mongoose.Schema({
     desc:{
         type:String
     },
+    owner:{
+        type:String
+    },
     status:{
         type:Boolean,
         default:false

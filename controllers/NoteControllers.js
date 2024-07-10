@@ -1,16 +1,71 @@
-const NotesModel=require("../models/NotesModel")
+const NoteModel = require("../models/NotesModel");
+const AuthModel = require("../models/AuthModel");
 
-class NoteControllers{
-    static createNote=async(req,res)=>{
+class NoteControllers {
+
+    //creating a single note
+    static createNote = async (req, res) => {
+        const { title, desc, userId } = req.body;
+
+        const newNote = new NoteModel({
+            title: title,
+            desc: desc,
+            owner: userId
+        })
+        const isCreated = await newNote.save()
+
+        if (isCreated) {
+            let isPushed = await AuthModel.findByIdAndUpdate({ _id: userId }, {
+                $push: {
+                    notes: isCreated._id
+                }
+            })
+
+            if (isPushed) {
+                res.json({
+                    msg: "note created",
+                    status: 201
+                })
+            } else {
+                res.json({
+                    msg: "note not created",
+                    status: 400
+                })
+            }
+
+        } else {
+            res.json({
+                msg: "note not created",
+                status: 400
+            })
+        }
 
     }
-    static deleteNote=async(req,res)=>{
-        
+
+
+
+    //deleting a single note
+    static deleteNote = async (req, res) => {
+        const {noteId}=req.params;
+        const {userId}=req.body;
+
+        // const isDeleted=await NoteModel.findByIdAndDelete({_id:noteId})
+
     }
 
-    static editNote=async(req,res)=>{
-        
+    static editNote = async (req, res) => {
+
+    }
+
+
+    static getSingleNote = async (req, res) => {
+
+    }
+
+
+    static deleteAllNotes = async (req, res) => {
+
     }
 }
 
-module.exports=NoteControllers;
+module.exports = NoteControllers;
