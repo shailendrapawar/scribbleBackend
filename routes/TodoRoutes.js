@@ -8,5 +8,6 @@ todoRouter.delete("/deleteTodo/:todoId",TodoControllers.deleteTodo)
 todoRouter.put("/editTodo/:todoId",TodoControllers.editTodo)
 todoRouter.get("/getTodo/:todoId",TodoControllers.getTodo)
 todoRouter.delete("/deleteAllTodos/:userId",TodoControllers.deleteAllTodo)
+todoRouter.post("/getAllTodo",TodoControllers.getAlltodo)
 
 module.exports=todoRouter

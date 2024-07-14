@@ -1,5 +1,7 @@
 const TodoModel=require("../models/TodosModel")
 const AuthModel=require("../models/AuthModel")
+
+
 class TodoControllers{
 
     //create a todo
@@ -45,7 +47,7 @@ class TodoControllers{
         const {userId}=req.body;
 
         const isDeleted=await TodoModel.findByIdAndDelete({_id:todoId})
-        // console.log(userId)
+        
 
         if(isDeleted){
             const isPoped=await AuthModel.findByIdAndUpdate({_id:userId},{
@@ -75,13 +77,14 @@ class TodoControllers{
 
     //editing a todo
     static editTodo =async(req,res)=>{
-        const {title,desc}=req.body
+        const {status}=req.body
         const{todoId}=req.params;
+
+        console.log(status)
 
         const isEdited=await TodoModel.findByIdAndUpdate({_id:todoId},{
             $set:{
-                title:title,
-                desc:desc
+                status:status
             }
         })
 
@@ -99,7 +102,6 @@ class TodoControllers{
         
     }
 
-
     // to get a single todo
     static getTodo=async(req,res)=>{
         const {todoId}=req.params;
@@ -114,6 +116,32 @@ class TodoControllers{
             res.json({
                 status:400,
                 msg:"todo not found"
+            })
+        }
+    }
+
+
+    //get all todos 
+
+    static getAlltodo=async(req,res)=>{
+        const{userId}=req.body;
+      
+
+        const allTodos=await TodoModel.find({
+            owner:userId
+        })
+
+        if(allTodos){
+            res.json({
+                status:200,
+                todos:allTodos,
+                msg:"todos found"
+            })
+        }else{
+            res.json({
+                status:400,
+                todos:[],
+                msg:"todos not found"
             })
         }
     }

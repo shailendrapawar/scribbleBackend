@@ -75,7 +75,7 @@ class NoteControllers {
 
     }
 
-
+    //editing note
     static editNote = async (req, res) => {
         const {newtitle, newDesc}=req.body;
         const {noteId}=req.params;
@@ -98,7 +98,7 @@ class NoteControllers {
 
     }
 
-
+    // getting single blogs
     static getSingleNote = async (req, res) => {
         const {noteId}=req.params;
 
@@ -121,7 +121,7 @@ class NoteControllers {
 
     }
 
-
+    // deleting all notes
     static deleteAllNotes = async (req, res) => {
         const {userId}=req.body;
 

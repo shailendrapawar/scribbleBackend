@@ -5,6 +5,7 @@ class AuthControllers {
 
 
     static login = async (req, res) => {
+        
         const {email,password}=req.body;
 
         const checkUser= await AuthModel.findOne({email:email});
@@ -69,8 +70,31 @@ class AuthControllers {
             })
         }
     }
+
+
     static getUser = async (req, res) => {
         const { id } = req.params
+        // console.log(id)
+
+        const userData=await AuthModel.findById({_id:id}).select("-password")
+        // console.log(userData)
+
+        if(userData){
+            res.json({
+                status:200,
+                userData:userData,
+                msg:"data found"
+            })
+            
+        }else{
+            res.json({
+                status:200,
+                data:{},
+                msg:"data not found"
+            })
+
+        }
+        
         
     }
 }
