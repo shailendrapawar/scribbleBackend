@@ -44,8 +44,8 @@ class TodoControllers{
     // delete a todo
     static deleteTodo=async(req,res)=>{
         const {todoId}=req.params;
-        const {userId}=req.body;
-
+        const {userId}=req.params;
+        // console.log(userId)
         const isDeleted=await TodoModel.findByIdAndDelete({_id:todoId})
         
 

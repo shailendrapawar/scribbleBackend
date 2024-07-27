@@ -1,6 +1,18 @@
 const express=require('express');
 const app=express()
 const cors=require('cors')
+const todoModel=require("./models/TodosModel")
+
+const {createServer}  =require("http")
+const myServer=createServer(app);
+
+const {Server} =require("socket.io")
+
+const io=new Server(myServer,{
+  cors:{
+    origin:"*"
+  }
+})
 
 require('dotenv').config()
 
@@ -22,10 +34,32 @@ app.use(authRouter);
 app.use(todoRouter)
 app.use(noteRouter)
 
+io.on("connection",(socket)=>{
+
+
+  //for handling todo status...
+  socket.on("setStatus",async({todoId,todoStatus})=>{
+    let val;
+    if(todoStatus){
+      val=false
+    }else{
+      val=true
+    }
+    const res=await todoModel.findByIdAndUpdate({_id:todoId},{
+    $set:{status:val}
+    })
+  })
+
+
+  
+})
+
+
+
 
 
 const port=process.env.PORT || 5000;
 
-app.listen(port,()=>{
-    console.log("server listening at port "+port)
+myServer.listen(port,()=>{
+    console.log(" my server listening at port "+port)
 })
