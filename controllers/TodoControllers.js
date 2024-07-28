@@ -6,10 +6,10 @@ class TodoControllers{
 
     //create a todo
     static createTodo=async(req,res)=>{
-        const {title,desc,userId}=req.body
+        const {desc,userId}=req.body
 
         const newTodo=new TodoModel({
-            title:title,
+            
             desc:desc,
             owner:userId
         })
