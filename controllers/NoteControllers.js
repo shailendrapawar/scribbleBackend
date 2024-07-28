@@ -47,8 +47,9 @@ class NoteControllers {
     //deleting a single note
     static deleteNote = async (req, res) => {
         const { noteId } = req.params;
-        const { userId } = req.body;
+        const { userId } = req.params;
 
+    
         const isDeleted = await NoteModel.findByIdAndDelete({ _id: noteId })
         if (isDeleted) {
             let isPull = await AuthModel.findByIdAndUpdate({ _id: userId }, {
@@ -57,7 +58,7 @@ class NoteControllers {
 
             if (isPull) {
                 res.json({
-                    msg: "note pulled",
+                    msg: "note deleted",
                     status: 200
                 })
             } else {
@@ -98,7 +99,7 @@ class NoteControllers {
 
     }
 
-    // getting single blogs
+    // getting single note
     static getSingleNote = async (req, res) => {
         const {noteId}=req.params;
 
@@ -118,13 +119,32 @@ class NoteControllers {
                 
             })
         }
+    }
+    //get all notes==
+    static getAllNotes=async(req,res)=>{
+        const {userId}=req.params;
+        const notes=await NoteModel.find({owner:userId})
+        if(notes){
+            res.json({
+             
+                    status:200,
+                    data:notes,
+                    msg:"note found"   
+            })
+        }else{
+            res.json({
+                status:400,
+                data:null,
+                msg:"notes not found"
+            })
+        }
 
     }
 
     // deleting all notes
     static deleteAllNotes = async (req, res) => {
-        const {userId}=req.body;
-
+        const {userId}=req.params;
+        
         const areDeleted=await NoteModel.deleteMany({owner:userId});
         if(areDeleted){
             const arePulled=await AuthModel.findByIdAndUpdate({_id:userId},{

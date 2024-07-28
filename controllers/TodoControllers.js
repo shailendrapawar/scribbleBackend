@@ -4,7 +4,7 @@ const AuthModel=require("../models/AuthModel")
 
 class TodoControllers{
 
-    //create a todo
+    //create a todo===========================================
     static createTodo=async(req,res)=>{
         const {desc,userId}=req.body
 
@@ -41,14 +41,13 @@ class TodoControllers{
 
     }
 
-    // delete a todo
+    // delete a single  todo=============================
     static deleteTodo=async(req,res)=>{
         const {todoId}=req.params;
         const {userId}=req.params;
-        // console.log(userId)
+        
         const isDeleted=await TodoModel.findByIdAndDelete({_id:todoId})
         
-
         if(isDeleted){
             const isPoped=await AuthModel.findByIdAndUpdate({_id:userId},{
                 $pull:{todos:todoId}
@@ -75,53 +74,8 @@ class TodoControllers{
         
     }
 
-    //editing a todo
-    static editTodo =async(req,res)=>{
-        const {status}=req.body
-        const{todoId}=req.params;
 
-        console.log(status)
-
-        const isEdited=await TodoModel.findByIdAndUpdate({_id:todoId},{
-            $set:{
-                status:status
-            }
-        })
-
-        if(isEdited){
-            res.json({
-                status:201,
-                msg:"todo updated"
-            })
-        }else{
-            res.json({
-                status:400,
-                msg:"todo not updated"
-            })
-        }
-        
-    }
-
-    // to get a single todo
-    static getTodo=async(req,res)=>{
-        const {todoId}=req.params;
-        const dbRes=await TodoModel.findById({_id:todoId});
-        if(dbRes){
-            res.json({
-                status:200,
-                msg:"todo found",
-                data:dbRes
-            })
-        }else{
-            res.json({
-                status:400,
-                msg:"todo not found"
-            })
-        }
-    }
-
-
-    //get all todos 
+    //get all todos ======================
 
     static getAlltodo=async(req,res)=>{
         const{userId}=req.body;
@@ -148,7 +102,7 @@ class TodoControllers{
 
 
 
-    //delete all todo
+    //delete all todo=======================================
     static deleteAllTodo=async(req,res)=>{
         const {userId}=req.params;
         const isDeleted=await TodoModel.deleteMany({owner:userId})
