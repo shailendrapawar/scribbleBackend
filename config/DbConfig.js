@@ -4,9 +4,9 @@ require("dotenv").config()
 const DbConnect=async()=>{
    let dbRes= await mongoose.connect(process.env.MONGO_URL)
    if(dbRes){
-      console.log("db connected")
+      console.log("db connected"+dbRes)
    }else{
-      console.log("db connection issue"+dbRes.err)
+      console.log("db connection issue"+dbRes)
    }
    // process.env.MONGO_URL
 
